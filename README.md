@@ -39,3 +39,11 @@ Este comando se utiliza para subir los cambios a AWS
 sls deploy --aws-profile [username]
 ```
 
+## Logs
+Este comando se utiliza para ver los logs del servidor
+
+```bash
+sls logs -f [nombrefuncion] -t --aws-profile [username]
+```
+
+

@@ -12,3 +12,8 @@ provider:
 functions:
   hacerPedido:
     handler: handler.hacerPedido
+    events: 
+      - http: 
+          method: post
+          path: pedido
+          
