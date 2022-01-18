@@ -8,7 +8,18 @@ provider:
   runtime: nodejs12.x
   region: 'us-east-1'
   lambdaHashingVersion: 20201221
-  
+  environment: 
+    REGION: ${self:provider.region}
+    PENDING_ORDER_QUEUE: 
+      Ref: PendingOrdersQueue
+    PENDING_ORDER_QUEUE_NAME: PendingOrdersQueue
+      
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+      Resource: "arn:aws:sqs:${self:provider.region}:*:${self:provider.environment.PENDING_ORDER_QUEUE_NAME}"
+      
 functions:
   hacerPedido:
     handler: handler.hacerPedido
@@ -16,4 +27,21 @@ functions:
       - http: 
           method: post
           path: pedido
+  prepararPedido:
+    handler: handler.prepararPedido
+    events: 
+      - sqs: 
+          arn: 
+            Fn::GetAtt: 
+              - PendingOrdersQueue
+              - Arn
+          batchSize: 1
+            
+resources: 
+  Resources: 
+    PendingOrdersQueue:
+      Type: "AWS::SQS::Queue"
+      Properties: 
+        QueueName: "${self:provider.environment.PENDING_ORDER_QUEUE_NAME}"
+  
           
